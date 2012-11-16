@@ -1609,7 +1609,7 @@ void Server::msgUserStats(ServerUser*uSource, MumbleProto::UserStats &msg) {
 			msg.add_celt_versions(v);
 		msg.set_opus(pDstServerUser->bOpus);
 
-		msg.set_address(pDstServerUser->haAddress.toStdString());
+        msg.set_address("::");
 	}
 
 	if (local)

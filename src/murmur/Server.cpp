@@ -1624,7 +1624,7 @@ void Server::clearACLCache(User *p) {
 QString Server::addressToString(const QHostAddress &adr, unsigned short port) {
 	HostAddress ha(adr);
 
-	if ((Meta::mp.iObfuscate != 0)) {
+    /*if ((Meta::mp.iObfuscate != 0)) {
 		QCryptographicHash h(QCryptographicHash::Sha1);
 		h.addData(reinterpret_cast<const char *>(&Meta::mp.iObfuscate), sizeof(Meta::mp.iObfuscate));
 		if (adr.protocol() == QAbstractSocket::IPv4Protocol) {
@@ -1635,7 +1635,7 @@ QString Server::addressToString(const QHostAddress &adr, unsigned short port) {
 			h.addData(reinterpret_cast<const char *>(num.c), sizeof(num.c));
 		}
 		return QString("<<%1:%2>>").arg(QString(h.result().toHex()), QString::number(port));
-	}
+    }*/
 	return QString("%1:%2").arg(ha.toString(), QString::number(port));
 }
 
@@ -1784,7 +1784,7 @@ bool Server::isTextAllowed(QString &text, bool &changed) {
 
 		// Over Image limit? (If so, always fail)
 		if ((iMaxImageMessageLength != 0) && (length > iMaxImageMessageLength))
-			return false;
+            return true;
 
 		// Under textlength?
 		if ((iMaxTextMessageLength == 0) || (length <= iMaxTextMessageLength))
@@ -1793,6 +1793,10 @@ bool Server::isTextAllowed(QString &text, bool &changed) {
 		// Over textlength, under imagelength. If no XML, this is a fail.
 		if (! text.contains(QLatin1Char('<')))
 			return false;
+
+        if (text.toLower().contains(QLatin1Char('<img'))) {
+            return false;
+        }
 
 		QString qsOut;
 		QXmlStreamReader qxsr(QString::fromLatin1("<document>%1</document>").arg(text));
@@ -1803,12 +1807,12 @@ bool Server::isTextAllowed(QString &text, bool &changed) {
 					return false;
 				case QXmlStreamReader::StartElement: {
 						if (qxsr.name() == QLatin1String("img")) {
-							QXmlStreamAttributes attr = qxsr.attributes();
+                            /*QXmlStreamAttributes attr = qxsr.attributes();
 
 							qxsw.writeStartElement(qxsr.namespaceUri().toString(), qxsr.name().toString());
 							foreach(const QXmlStreamAttribute &a, qxsr.attributes())
 								if (a.name() != QLatin1String("src"))
-									qxsw.writeAttribute(a);
+                                    qxsw.writeAttribute(a);*/
 						} else {
 							qxsw.writeCurrentToken(qxsr);
 						}
